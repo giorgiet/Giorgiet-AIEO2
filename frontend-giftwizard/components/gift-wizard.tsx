@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
@@ -34,23 +34,35 @@ const initialState: WizardState = {
 
 function FallingGifts() {
   const gifts = ["🎁", "🎀", "🎉", "✨"]
-  // Generate randomized properties for each gift
-  const giftElements = Array.from({ length: 9 }, (_, i) => {
+  const [giftElements, setGiftElements] = useState<Array<{
+    id: number
+    emoji: string
+    size: number
+    speed: number
+    delay: number
+    leftPosition: number
+  }>>([])
+
+  // Generate randomized properties only on client side after hydration
+  useEffect(() => {
     const baseSize = 2.5
-    const sizeVariation = 0.5 + Math.random() * 1.5 // Random size between 0.5x and 2x
-    const speed = 8 + Math.random() * 4 // Random speed between 8s and 12s
-    const delay = Math.random() * 5 // Random delay up to 5s
-    const leftPosition = 5 + (i * 10) + (Math.random() * 5 - 2.5) // Slightly randomized position
-    
-    return {
-      id: i,
-      emoji: gifts[i % gifts.length],
-      size: baseSize * sizeVariation,
-      speed,
-      delay,
-      leftPosition,
-    }
-  })
+    const elements = Array.from({ length: 9 }, (_, i) => {
+      const sizeVariation = 0.5 + Math.random() * 1.5 // Random size between 0.5x and 2x
+      const speed = 8 + Math.random() * 4 // Random speed between 8s and 12s
+      const delay = Math.random() * 5 // Random delay up to 5s
+      const leftPosition = 5 + (i * 10) + (Math.random() * 5 - 2.5) // Slightly randomized position
+      
+      return {
+        id: i,
+        emoji: gifts[i % gifts.length],
+        size: baseSize * sizeVariation,
+        speed,
+        delay,
+        leftPosition,
+      }
+    })
+    setGiftElements(elements)
+  }, [])
 
   return (
     <div className="fixed inset-0 overflow-hidden pointer-events-none">
