@@ -2,7 +2,7 @@
 
 import type { WizardState } from "./gift-wizard"
 
-interface StepConfig {
+export interface StepConfig {
   title: string
   description: string
   key: string
@@ -51,7 +51,7 @@ export default function WizardStep({ step, state, setState }: WizardStepProps) {
         {step.options?.map((option) => (
           <label
             key={option}
-            className="flex items-center p-4 border-2 border-border rounded-lg cursor-pointer hover:border-primary hover:bg-primary/5 transition-all"
+            className="flex items-center p-4 border-2 border-border rounded-lg cursor-pointer hover:border-primary hover:bg-primary/5 transition-all duration-300 hover:scale-105 hover:shadow-md"
             style={{
               borderColor: state[step.key as keyof WizardState] === option ? "var(--primary)" : undefined,
               backgroundColor: state[step.key as keyof WizardState] === option ? "rgba(215, 38, 61, 0.05)" : undefined,
@@ -78,7 +78,7 @@ export default function WizardStep({ step, state, setState }: WizardStepProps) {
         {step.options?.map((option) => (
           <label
             key={option}
-            className="flex items-center p-3 border-2 border-border rounded-lg cursor-pointer hover:border-accent hover:bg-accent/5 transition-all"
+            className="flex items-center p-3 border-2 border-border rounded-lg cursor-pointer hover:border-accent hover:bg-accent/5 transition-all duration-300 hover:scale-105 hover:shadow-md"
             style={{
               borderColor: state.interests.includes(option) ? "var(--accent)" : undefined,
               backgroundColor: state.interests.includes(option) ? "rgba(27, 153, 139, 0.05)" : undefined,
@@ -108,7 +108,7 @@ export default function WizardStep({ step, state, setState }: WizardStepProps) {
             {question.options.map((option) => (
               <label
                 key={option}
-                className="flex items-center p-3 border-2 border-border rounded-lg cursor-pointer hover:border-primary hover:bg-primary/5 transition-all"
+                className="flex items-center p-3 border-2 border-border rounded-lg cursor-pointer hover:border-primary hover:bg-primary/5 transition-all duration-300 hover:scale-105 hover:shadow-md"
                 style={{
                   borderColor: state[question.key as keyof WizardState] === option ? "var(--primary)" : undefined,
                   backgroundColor:
