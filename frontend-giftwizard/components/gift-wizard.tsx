@@ -1,11 +1,11 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { Badge } from "@/components/ui/badge"
-import WizardStep from "./wizard-step"
+import WizardStep, { type StepConfig } from "./wizard-step"
 import GiftResults from "./gift-results"
 
 export interface WizardState {
@@ -34,15 +34,49 @@ const initialState: WizardState = {
 
 function FallingGifts() {
   const gifts = ["🎁", "🎀", "🎉", "✨"]
-  const giftElements = Array.from({ length: 9 }, (_, i) => ({
-    id: i,
-    emoji: gifts[i % gifts.length],
-  }))
+  const [giftElements, setGiftElements] = useState<Array<{
+    id: number
+    emoji: string
+    size: number
+    speed: number
+    delay: number
+    leftPosition: number
+  }>>([])
+
+  // Generate randomized properties only on client side after hydration
+  useEffect(() => {
+    const baseSize = 2.5
+    const elements = Array.from({ length: 9 }, (_, i) => {
+      const sizeVariation = 0.5 + Math.random() * 1.5 // Random size between 0.5x and 2x
+      const speed = 8 + Math.random() * 4 // Random speed between 8s and 12s
+      const delay = Math.random() * 5 // Random delay up to 5s
+      const leftPosition = 5 + (i * 10) + (Math.random() * 5 - 2.5) // Slightly randomized position
+      
+      return {
+        id: i,
+        emoji: gifts[i % gifts.length],
+        size: baseSize * sizeVariation,
+        speed,
+        delay,
+        leftPosition,
+      }
+    })
+    setGiftElements(elements)
+  }, [])
 
   return (
     <div className="fixed inset-0 overflow-hidden pointer-events-none">
       {giftElements.map((gift) => (
-        <div key={gift.id} className={`falling-gift gift-${gift.id + 1}`}>
+        <div
+          key={gift.id}
+          className="falling-gift"
+          style={{
+            left: `${gift.leftPosition}%`,
+            fontSize: `${gift.size}rem`,
+            animationDuration: `${gift.speed}s`,
+            animationDelay: `${gift.delay}s`,
+          }}
+        >
           {gift.emoji}
         </div>
       ))}
@@ -55,7 +89,7 @@ export default function GiftWizard() {
   const [state, setState] = useState<WizardState>(initialState)
   const [showResults, setShowResults] = useState(false)
 
-  const steps = [
+  const steps: StepConfig[] = [
     {
       title: "Who are you buying for?",
       description: "Select the relationship with the recipient",
@@ -190,7 +224,7 @@ export default function GiftWizard() {
           <p className="text-muted-foreground text-lg">Find the perfect Christmas gift in just 5 steps</p>
         </div>
 
-        {/* Progress */}
+          {/* Progress */}
         <div className="mb-8">
           <div className="flex justify-between items-center mb-3">
             <span className="text-sm font-semibold text-foreground">
@@ -200,7 +234,7 @@ export default function GiftWizard() {
               {Math.round(progressPercentage)}%
             </Badge>
           </div>
-          <Progress value={progressPercentage} className="h-2" />
+          <Progress value={progressPercentage} className="h-2 transition-all duration-500 ease-out" />
         </div>
 
         {/* Card */}
@@ -215,13 +249,18 @@ export default function GiftWizard() {
 
           {/* Buttons */}
           <div className="flex gap-4 justify-between pt-6 border-t border-border">
-            <Button variant="outline" onClick={handleBack} disabled={currentStep === 0} className="px-8 bg-transparent">
+            <Button
+              variant="outline"
+              onClick={handleBack}
+              disabled={currentStep === 0}
+              className="px-8 bg-transparent transition-all duration-300 hover:scale-105 hover:shadow-lg hover:bg-background/50"
+            >
               Back
             </Button>
             <Button
               onClick={handleNext}
               disabled={!isStepComplete()}
-              className="px-8 bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white"
+              className="px-8 bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white transition-all duration-300 hover:scale-105 hover:shadow-lg"
             >
               {currentStep === steps.length - 1 ? "Get Recommendations" : "Next"}
             </Button>

@@ -1,9 +1,11 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import type { WizardState } from "./gift-wizard"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import Confetti from "./confetti"
 
 interface GiftResultsProps {
   state: WizardState
@@ -81,17 +83,27 @@ const generateRecommendations = (state: WizardState): GiftRecommendation[] => {
 
 export default function GiftResults({ state, onRestart }: GiftResultsProps) {
   const recommendations = generateRecommendations(state)
+  const [showConfetti, setShowConfetti] = useState(true)
+
+  useEffect(() => {
+    // Trigger confetti on mount
+    setShowConfetti(true)
+    const timer = setTimeout(() => setShowConfetti(false), 3000)
+    return () => clearTimeout(timer)
+  }, [])
 
   return (
-    <div className="w-full max-w-4xl mx-auto">
-      {/* Header */}
-      <div className="text-center mb-8">
-        <h1 className="text-4xl font-bold text-foreground mb-2">🎉 Your Perfect Gifts!</h1>
-        <p className="text-muted-foreground">Personalized recommendations based on your answers</p>
-      </div>
+    <>
+      {showConfetti && <Confetti />}
+      <div className="w-full max-w-4xl mx-auto slide-up-fade-in">
+        {/* Header */}
+        <div className="text-center mb-8 scale-pop">
+          <h1 className="text-4xl font-bold text-foreground mb-2">🎉 Your Perfect Gifts!</h1>
+          <p className="text-muted-foreground">Personalized recommendations based on your answers</p>
+        </div>
 
-      {/* Summary */}
-      <Card className="p-6 mb-8 border-0 shadow-lg bg-gradient-to-r from-primary/5 via-secondary/5 to-accent/5">
+        {/* Summary */}
+        <Card className="p-6 mb-8 border-0 shadow-lg bg-gradient-to-r from-primary/5 via-secondary/5 to-accent/5 slide-up-fade-in" style={{ animationDelay: "0.1s" }}>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div>
             <p className="text-sm text-muted-foreground mb-1">Recipient</p>
@@ -114,8 +126,12 @@ export default function GiftResults({ state, onRestart }: GiftResultsProps) {
 
       {/* Recommendations Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-        {recommendations.map((gift) => (
-          <Card key={gift.id} className="overflow-hidden hover:shadow-xl transition-shadow border-0">
+        {recommendations.map((gift, index) => (
+          <Card
+            key={gift.id}
+            className="overflow-hidden hover:shadow-xl transition-shadow border-0 slide-up-fade-in"
+            style={{ animationDelay: `${0.2 + index * 0.1}s` }}
+          >
             {/* Image */}
             <div className="relative h-48 bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center overflow-hidden">
               <img
@@ -159,26 +175,27 @@ export default function GiftResults({ state, onRestart }: GiftResultsProps) {
       </div>
 
       {/* CTA Section */}
-      <Card className="p-8 text-center border-0 bg-gradient-to-r from-primary/10 via-secondary/10 to-accent/10 mb-8">
+      <Card className="p-8 text-center border-0 bg-gradient-to-r from-primary/10 via-secondary/10 to-accent/10 mb-8 slide-up-fade-in" style={{ animationDelay: "0.7s" }}>
         <h2 className="text-2xl font-bold text-foreground mb-2">Love these recommendations?</h2>
         <p className="text-muted-foreground mb-6">Start with a different person to get more unique gift ideas!</p>
         <div className="flex gap-4 justify-center flex-wrap">
           <Button
             onClick={onRestart}
-            className="bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white px-8"
+            className="bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white px-8 transition-all duration-300 hover:scale-105 hover:shadow-lg"
           >
             Find Another Gift
           </Button>
-          <Button variant="outline" className="px-8 border-2 bg-transparent">
+          <Button variant="outline" className="px-8 border-2 bg-transparent transition-all duration-300 hover:scale-105 hover:shadow-lg hover:bg-background/50">
             Share Results
           </Button>
         </div>
       </Card>
 
       {/* Footer */}
-      <p className="text-center text-muted-foreground text-sm">
+      <p className="text-center text-muted-foreground text-sm slide-up-fade-in" style={{ animationDelay: "0.8s" }}>
         🎄 Happy gift giving! May your Christmas be filled with joy and perfect presents.
       </p>
     </div>
+    </>
   )
 }
